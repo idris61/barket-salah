@@ -1,0 +1,179 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-12 05:32:07.970334",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "status",
+  "opportunity",
+  "cargo_ready_date",
+  "dangerous_goods",
+  "dangerous_doc",
+  "column_break_bmgw",
+  "transport_mode",
+  "container_type",
+  "incoterm",
+  "delivery_type",
+  "cargo_value",
+  "section_break_trnw",
+  "origin_country",
+  "origin_city",
+  "pickup_address",
+  "column_break_krvy",
+  "destination_country",
+  "destination_city",
+  "delivery_address",
+  "section_break_jphb",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "transport_mode",
+   "fieldtype": "Select",
+   "label": "Transport Mode",
+   "options": "\nSea\nAir\nRoad\nRail"
+  },
+  {
+   "fieldname": "container_type",
+   "fieldtype": "Select",
+   "label": "Container Type",
+   "options": "\n20GP\n40GP\n40HC\n40FR\nLCL"
+  },
+  {
+   "fieldname": "origin_country",
+   "fieldtype": "Data",
+   "label": "Origin Country"
+  },
+  {
+   "fieldname": "origin_city",
+   "fieldtype": "Data",
+   "label": "Origin City"
+  },
+  {
+   "fieldname": "destination_country",
+   "fieldtype": "Data",
+   "label": "Destination Country"
+  },
+  {
+   "fieldname": "destination_city",
+   "fieldtype": "Data",
+   "label": "Destination City"
+  },
+  {
+   "fieldname": "pickup_address",
+   "fieldtype": "Small Text",
+   "label": "Pickup Address"
+  },
+  {
+   "fieldname": "delivery_address",
+   "fieldtype": "Small Text",
+   "label": "Delivery Address"
+  },
+  {
+   "fieldname": "cargo_ready_date",
+   "fieldtype": "Date",
+   "label": "Cargo Ready Date"
+  },
+  {
+   "fieldname": "cargo_value",
+   "fieldtype": "Currency",
+   "label": "Cargo Value"
+  },
+  {
+   "default": "0",
+   "fieldname": "dangerous_goods",
+   "fieldtype": "Check",
+   "label": "Dangerous Goods"
+  },
+  {
+   "description": "EXW (Ex Works): Sat\u0131c\u0131 mallar\u0131 kendi tesisinde haz\u0131r eder, t\u00fcm ta\u015f\u0131ma ve g\u00fcmr\u00fck i\u015flemlerini al\u0131c\u0131 \u00fcstlenir.\nFOB (Free On Board): Sat\u0131c\u0131 mallar\u0131 y\u00fckleme liman\u0131nda gemiye y\u00fckler, y\u00fcklemeden sonra risk ve masraflar al\u0131c\u0131ya ge\u00e7er.\nCIF (Cost, Insurance and Freight): Sat\u0131c\u0131 var\u0131\u015f liman\u0131na kadar navlun ve sigortay\u0131 \u00f6der, ancak risk y\u00fckleme liman\u0131nda al\u0131c\u0131ya ge\u00e7er.\nDAP (Delivered At Place): Sat\u0131c\u0131 mallar\u0131 belirtilen var\u0131\u015f noktas\u0131na kadar getirir, ithalat g\u00fcmr\u00fc\u011f\u00fc ve vergiler al\u0131c\u0131ya aittir.\nDDP (Delivered Duty Paid): Sat\u0131c\u0131 mallar\u0131 al\u0131c\u0131n\u0131n kap\u0131s\u0131na kadar getirir ve t\u00fcm ta\u015f\u0131ma, g\u00fcmr\u00fck ve vergileri \u00f6der.",
+   "fieldname": "incoterm",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Incoterm",
+   "options": "\nEXW\nFOB\nCIF\nDAP\nDDP"
+  },
+  {
+   "default": "Port to Port",
+   "fieldname": "delivery_type",
+   "fieldtype": "Select",
+   "label": "Delivery Type",
+   "options": "\nPort to Port\nPort to Warehouse\nWarehouse to Port\nWarehouse to Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nDraft\nSubmitted\nConverted to Opportunity"
+  },
+  {
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "label": "Opportunity",
+   "options": "Opportunity"
+  },
+  {
+   "fieldname": "column_break_bmgw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_trnw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_krvy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_jphb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "dangerous_doc",
+   "fieldtype": "Attach",
+   "label": "Dangerous Doc"
+  }
+ ],
+ "links": [],
+ "modified": "2026-03-23 02:06:23.190239",
+ "modified_by": "Administrator",
+ "module": "Barketsalah",
+ "name": "Shipping Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

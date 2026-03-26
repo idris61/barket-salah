@@ -1,0 +1,42 @@
+{
+ "doctype": "DocType",
+ "name": "Shipment Container",
+ "module": "Barketsalah",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": [
+  "container_no",
+  "container_type",
+  "seal_no",
+  "gross_weight",
+  "net_weight"
+ ],
+ "fields": [
+  {
+   "fieldname": "container_no",
+   "label": "Container No",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "container_type",
+   "label": "Container Type",
+   "fieldtype": "Select",
+   "options": "20GP\n40GP\n40HC"
+  },
+  {
+   "fieldname": "seal_no",
+   "label": "Seal No",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "gross_weight",
+   "label": "Gross Weight",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "net_weight",
+   "label": "Net Weight",
+   "fieldtype": "Float"
+  }
+ ]
+}

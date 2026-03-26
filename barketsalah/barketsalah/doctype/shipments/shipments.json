@@ -1,0 +1,177 @@
+{
+ "actions": [],
+ "creation": "2026-03-12 05:35:00.603038",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "sales_order",
+  "carrier",
+  "vessel_name",
+  "voyage_no",
+  "hbl_number",
+  "mbl_number",
+  "etd",
+  "column_break_docx",
+  "status",
+  "origin_port",
+  "destination_port",
+  "port_of_loading",
+  "final_destination",
+  "freight_terms",
+  "port_of_discharge",
+  "eta",
+  "section_break_gxmn",
+  "containers",
+  "section_break_bmhs",
+  "milestones",
+  "section_break_liwd",
+  "documents"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales Order",
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "carrier",
+   "fieldtype": "Link",
+   "label": "Carrier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "vessel_name",
+   "fieldtype": "Data",
+   "label": "Vessel Name"
+  },
+  {
+   "fieldname": "voyage_no",
+   "fieldtype": "Data",
+   "label": "Voyage No"
+  },
+  {
+   "fieldname": "hbl_number",
+   "fieldtype": "Data",
+   "label": "House Bill of Lading"
+  },
+  {
+   "fieldname": "mbl_number",
+   "fieldtype": "Data",
+   "label": "Master Bill of Lading"
+  },
+  {
+   "fieldname": "origin_port",
+   "fieldtype": "Data",
+   "label": "Origin Port"
+  },
+  {
+   "fieldname": "destination_port",
+   "fieldtype": "Data",
+   "label": "Destination Port"
+  },
+  {
+   "fieldname": "port_of_loading",
+   "fieldtype": "Data",
+   "label": "Port of Loading"
+  },
+  {
+   "fieldname": "port_of_discharge",
+   "fieldtype": "Data",
+   "label": "Port of Discharge"
+  },
+  {
+   "fieldname": "final_destination",
+   "fieldtype": "Data",
+   "label": "Final Destination"
+  },
+  {
+   "fieldname": "etd",
+   "fieldtype": "Date",
+   "label": "ETD"
+  },
+  {
+   "fieldname": "eta",
+   "fieldtype": "Date",
+   "label": "ETA"
+  },
+  {
+   "fieldname": "freight_terms",
+   "fieldtype": "Select",
+   "label": "Freight Terms",
+   "options": "Prepaid\nCollect"
+  },
+  {
+   "fieldname": "containers",
+   "fieldtype": "Table",
+   "label": "Containers",
+   "options": "Shipment Container"
+  },
+  {
+   "fieldname": "milestones",
+   "fieldtype": "Table",
+   "label": "Milestones",
+   "options": "Shipment Milestone"
+  },
+  {
+   "fieldname": "documents",
+   "fieldtype": "Table",
+   "label": "Documents",
+   "options": "Shipment Document"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Booked\nIn Transit\nArrived\nDelivered"
+  },
+  {
+   "fieldname": "column_break_docx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_gxmn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_bmhs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_liwd",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "links": [],
+ "modified": "2026-03-12 08:17:44.764374",
+ "modified_by": "Administrator",
+ "module": "Barketsalah",
+ "name": "Shipments",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

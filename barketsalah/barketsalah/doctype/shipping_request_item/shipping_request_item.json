@@ -1,0 +1,79 @@
+{
+ "doctype": "DocType",
+ "name": "Shipping Request Item",
+ "istable": 1,
+ "editable_grid": 1,
+ "module": "Barketsalah",
+ "field_order": [
+  "description",
+  "quantity",
+  "weight",
+  "volume",
+  "package_type",
+  "length",
+  "width",
+  "height",
+  "hs_code",
+  "cargo_value",
+  "currency"
+ ],
+ "fields": [
+  {
+   "fieldname": "description",
+   "label": "Cargo Description",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "quantity",
+   "label": "Quantity",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "weight",
+   "label": "Weight (kg)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "volume",
+   "label": "Volume (m3)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "package_type",
+   "label": "Package Type",
+   "fieldtype": "Select",
+   "options": "Pallet\nBox\nCrate"
+  },
+  {
+   "fieldname": "length",
+   "label": "Length (cm)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "width",
+   "label": "Width (cm)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "height",
+   "label": "Height (cm)",
+   "fieldtype": "Float"
+  },
+  {
+   "fieldname": "hs_code",
+   "label": "HS Code",
+   "fieldtype": "Data"
+  },
+  {
+   "fieldname": "cargo_value",
+   "label": "Cargo Value",
+   "fieldtype": "Currency"
+  },
+  {
+   "fieldname": "currency",
+   "label": "Currency",
+   "fieldtype": "Link",
+   "options": "Currency"
+  }
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "doctype": "DocType",
+ "name": "Shipment Document",
+ "module": "Barketsalah",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": [
+  "document_type",
+  "attachment"
+ ],
+ "fields": [
+  {
+   "fieldname": "document_type",
+   "label": "Document Type",
+   "fieldtype": "Select",
+   "options": "Commercial Invoice\nPacking List\nBill of Lading\nCertificate of Origin\nArrival Notice\nDelivery Order\nCustoms Release\nInsurance Certificate\nExport Declaration"
+  },
+  {
+   "fieldname": "attachment",
+   "label": "File",
+   "fieldtype": "Attach"
+  }
+ ]
+}

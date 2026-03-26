@@ -1,0 +1,30 @@
+{
+ "doctype": "DocType",
+ "name": "Shipment Milestone",
+ "module": "Barketsalah",
+ "istable": 1,
+ "editable_grid": 1,
+ "field_order": [
+  "milestone",
+  "date",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "milestone",
+   "label": "Milestone",
+   "fieldtype": "Select",
+   "options": "Booking Confirmed\nGate In\nLoaded\nSailed\nArrived\nDischarged\nCustoms Clearance\nRail Departure\nDelivered"
+  },
+  {
+   "fieldname": "date",
+   "label": "Date",
+   "fieldtype": "Datetime"
+  },
+  {
+   "fieldname": "notes",
+   "label": "Notes",
+   "fieldtype": "Small Text"
+  }
+ ]
+}
