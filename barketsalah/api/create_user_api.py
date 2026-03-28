@@ -4,7 +4,6 @@ import time
 
 import frappe
 from frappe import _
-from frappe.rate_limiter import rate_limit
 from frappe.utils import validate_email_address
 from frappe.exceptions import PermissionError, ValidationError
 
@@ -30,6 +29,7 @@ def _get_required_header(name: str) -> str:
 
 def _assert_valid_signed_request(email: str, first_name: str) -> None:
     secret = (frappe.conf.get("website_user_create_secret") or "").strip()
+
     if not secret:
         frappe.throw(_("Server is not configured for this endpoint."), ValidationError)
 
@@ -69,10 +69,17 @@ def _assert_valid_signed_request(email: str, first_name: str) -> None:
 # MAIN ENDPOINT
 # -------------------------
 
-@frappe.whitelist(allow_guest=True)  # 🔥 whitelist üstte olacak
-@rate_limit(limit=20, seconds=60, methods="POST")
+@frappe.whitelist(allow_guest=True)
 def create_user_from_website(email: str, first_name: str) -> dict:
-    # sadece POST kabul et
+
+    # 🔥 RATE LIMIT (manual)
+    frappe.rate_limiter.rate_limit(
+        limit=20,
+        seconds=60,
+        key="create_user_from_website"
+    )
+
+    # sadece POST
     if frappe.request.method != "POST":
         frappe.throw(_("Method Not Allowed"), PermissionError)
 
@@ -91,14 +98,14 @@ def create_user_from_website(email: str, first_name: str) -> dict:
     if len(first_name) > 140:
         first_name = first_name[:140]
 
-    # 🔐 signature kontrolü
+    # 🔐 signature check
     _assert_valid_signed_request(email=email, first_name=first_name)
 
-    # kullanıcı var mı?
+    # user var mı?
     if frappe.db.exists("User", email):
         return {"status": "exists"}
 
-    # kullanıcı oluştur
+    # user oluştur
     user = frappe.get_doc(
         {
             "doctype": "User",
