@@ -23,13 +23,14 @@ def _get_required_header(name: str) -> str:
     return value
 
 
-def _get_request_data() -> tuple[str, str]:
-    data = frappe.local.form_dict or {}
+def _get_request_data():
+    data = frappe.request.get_json() or frappe.local.form_dict or {}
 
-    email = _normalize_email(data.get("email"))
-    first_name = _normalize_name(data.get("first_name"))
+    email = (data.get("email") or "").strip().lower()
+    first_name = (data.get("first_name") or "").strip()
 
     return email, first_name
+
 
 
 def _assert_valid_signed_request(email: str, first_name: str) -> None:
