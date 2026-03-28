@@ -143,6 +143,8 @@ doc_events = {
 	"Quotation": {
 		"before_validate": "barketsalah.api.quote_to_salesorder.prepare_quote_items_for_sales_order",
 		"before_save": "barketsalah.api.setup.quotation_before_save",
+		"on_submit": "barketsalah.api.setup.quotation_create_sales_order_on_accept",
+		"on_update_after_submit": "barketsalah.api.setup.quotation_create_sales_order_on_accept",
 	}
 }
 
