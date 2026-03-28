@@ -4,13 +4,9 @@ import time
 
 import frappe
 from frappe import _
-from frappe.utils import validate_email_address
 from frappe.exceptions import PermissionError, ValidationError
+from frappe.utils import validate_email_address
 
-
-# -------------------------
-# Helpers
-# -------------------------
 
 def _normalize_email(email: str) -> str:
     return (email or "").strip().lower()
@@ -27,9 +23,17 @@ def _get_required_header(name: str) -> str:
     return value
 
 
+def _get_request_data() -> tuple[str, str]:
+    data = frappe.local.form_dict or {}
+
+    email = _normalize_email(data.get("email"))
+    first_name = _normalize_name(data.get("first_name"))
+
+    return email, first_name
+
+
 def _assert_valid_signed_request(email: str, first_name: str) -> None:
     secret = (frappe.conf.get("website_user_create_secret") or "").strip()
-
     if not secret:
         frappe.throw(_("Server is not configured for this endpoint."), ValidationError)
 
@@ -42,19 +46,14 @@ def _assert_valid_signed_request(email: str, first_name: str) -> None:
     except ValueError:
         frappe.throw(_("Unauthorized request"), PermissionError)
 
-    # ⏱️ 5 dakika window
     if abs(int(time.time()) - ts_int) > 300:
         frappe.throw(_("Unauthorized request"), PermissionError)
 
-    # 🔁 replay attack koruması
     nonce_cache_key = f"create-user-nonce:{nonce}"
     if frappe.cache.get_value(nonce_cache_key):
         frappe.throw(_("Unauthorized request"), PermissionError)
 
-    frappe.cache.set_value(nonce_cache_key, 1, expires_in_sec=300)
-
     payload = f"{ts}.{nonce}.{email}.{first_name}"
-
     expected_signature = hmac.new(
         secret.encode("utf-8"),
         payload.encode("utf-8"),
@@ -64,27 +63,21 @@ def _assert_valid_signed_request(email: str, first_name: str) -> None:
     if not hmac.compare_digest(signature, expected_signature):
         frappe.throw(_("Unauthorized request"), PermissionError)
 
+    frappe.cache.set_value(nonce_cache_key, 1, expires_in_sec=300)
 
-# -------------------------
-# MAIN ENDPOINT
-# -------------------------
 
 @frappe.whitelist(allow_guest=True)
-def create_user_from_website(email: str, first_name: str) -> dict:
-
-    # 🔥 RATE LIMIT (manual)
+def create_user_from_website():
     frappe.rate_limiter.rate_limit(
         limit=20,
         seconds=60,
-        key="create_user_from_website"
+        key="create_user_from_website",
     )
 
-    # sadece POST
     if frappe.request.method != "POST":
         frappe.throw(_("Method Not Allowed"), PermissionError)
 
-    email = _normalize_email(email)
-    first_name = _normalize_name(first_name)
+    email, first_name = _get_request_data()
 
     if not email:
         return {"status": "error", "message": "Email required"}
@@ -98,14 +91,11 @@ def create_user_from_website(email: str, first_name: str) -> dict:
     if len(first_name) > 140:
         first_name = first_name[:140]
 
-    # 🔐 signature check
     _assert_valid_signed_request(email=email, first_name=first_name)
 
-    # user var mı?
     if frappe.db.exists("User", email):
         return {"status": "exists"}
 
-    # user oluştur
     user = frappe.get_doc(
         {
             "doctype": "User",
@@ -120,10 +110,6 @@ def create_user_from_website(email: str, first_name: str) -> dict:
 
     return {"status": "created"}
 
-
-# -------------------------
-# TEST ENDPOINT
-# -------------------------
 
 @frappe.whitelist(allow_guest=True)
 def test_endpoint():
