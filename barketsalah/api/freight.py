@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 from frappe.utils import add_days, nowdate
+from barketsalah.api.utils import log_api_event
 
 
 def _get_default_item_group() -> str:
@@ -44,9 +45,16 @@ def _ensure_ocean_freight_item() -> str:
 
 @frappe.whitelist()
 def make_opportunity(shipping_request: str) -> str:
+    log_api_event("freight.make_opportunity.started", shipping_request=shipping_request)
     sr = frappe.get_doc("Shipping Request", shipping_request)
 
     if sr.get("opportunity"):
+        log_api_event(
+            "freight.make_opportunity.existing_opportunity",
+            shipping_request=sr.name,
+            opportunity=sr.opportunity,
+            insurance_requested=sr.get("insurance_requested"),
+        )
         if sr.get("insurance_requested") and not frappe.db.get_value(
             "Opportunity", sr.opportunity, "custom_insurance_requested"
         ):
@@ -57,6 +65,11 @@ def make_opportunity(shipping_request: str) -> str:
                 1,
                 update_modified=False,
             )
+            log_api_event(
+                "freight.make_opportunity.updated_existing_opportunity_insurance",
+                shipping_request=sr.name,
+                opportunity=sr.opportunity,
+            )
         return sr.opportunity
 
     opp = frappe.new_doc("Opportunity")
@@ -66,11 +79,22 @@ def make_opportunity(shipping_request: str) -> str:
     opp.custom_shipping_request = sr.name
     if sr.get("insurance_requested"):
         opp.custom_insurance_requested = 1
+        log_api_event(
+            "freight.make_opportunity.set_new_opportunity_insurance",
+            shipping_request=sr.name,
+        )
     opp.status = "Open"
     opp.insert(ignore_permissions=True)
 
     sr.db_set("opportunity", opp.name)
     sr.db_set("status", "Converted to Opportunity")
+    log_api_event(
+        "freight.make_opportunity.created",
+        shipping_request=sr.name,
+        opportunity=opp.name,
+        insurance_requested=sr.get("insurance_requested"),
+        opportunity_insurance=opp.get("custom_insurance_requested"),
+    )
 
     return opp.name
 
