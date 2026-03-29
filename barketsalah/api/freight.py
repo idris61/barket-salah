@@ -47,6 +47,16 @@ def make_opportunity(shipping_request: str) -> str:
     sr = frappe.get_doc("Shipping Request", shipping_request)
 
     if sr.get("opportunity"):
+        if sr.get("insurance_requested") and not frappe.db.get_value(
+            "Opportunity", sr.opportunity, "custom_insurance_requested"
+        ):
+            frappe.db.set_value(
+                "Opportunity",
+                sr.opportunity,
+                "custom_insurance_requested",
+                1,
+                update_modified=False,
+            )
         return sr.opportunity
 
     opp = frappe.new_doc("Opportunity")
