@@ -49,6 +49,23 @@ def make_opportunity(shipping_request: str) -> str:
     sr = frappe.get_doc("Shipping Request", shipping_request)
 
     if sr.get("opportunity"):
+        existing_shipping_request = frappe.db.get_value(
+            "Opportunity", sr.opportunity, "custom_shipping_request"
+        )
+        if not existing_shipping_request:
+            frappe.db.set_value(
+                "Opportunity",
+                sr.opportunity,
+                "custom_shipping_request",
+                sr.name,
+                update_modified=False,
+            )
+            log_api_event(
+                "freight.make_opportunity.updated_existing_opportunity_shipping_request",
+                shipping_request=sr.name,
+                opportunity=sr.opportunity,
+            )
+
         log_api_event(
             "freight.make_opportunity.existing_opportunity",
             shipping_request=sr.name,
