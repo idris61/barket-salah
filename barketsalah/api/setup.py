@@ -42,6 +42,33 @@ def _get_existing_sales_order_for_quotation(quotation_name: str) -> str | None:
     return existing[0].parent if existing else None
 
 
+def _sync_opportunity_insurance_flag(opportunity_name: str | None) -> None:
+    if not opportunity_name:
+        return
+
+    shipping_request = frappe.db.get_value("Opportunity", opportunity_name, "custom_shipping_request")
+    if not shipping_request:
+        return
+
+    if not frappe.db.exists("Shipping Request", shipping_request):
+        return
+
+    insurance_requested = frappe.db.get_value("Shipping Request", shipping_request, "insurance_requested")
+    if not insurance_requested:
+        return
+
+    if frappe.db.get_value("Opportunity", opportunity_name, "custom_insurance_requested"):
+        return
+
+    frappe.db.set_value(
+        "Opportunity",
+        opportunity_name,
+        "custom_insurance_requested",
+        1,
+        update_modified=False,
+    )
+
+
 def quotation_create_sales_order_on_accept(doc, method=None) -> None:
     if doc.doctype != "Quotation":
         return
@@ -67,6 +94,7 @@ def quotation_create_sales_order_on_accept(doc, method=None) -> None:
 
     sales_order.flags.ignore_permissions = True
     sales_order.insert(ignore_permissions=True)
+    _sync_opportunity_insurance_flag(doc.get("opportunity"))
 
     frappe.msgprint(
         _("Sales Order {0} was created automatically.").format(frappe.bold(sales_order.name)),

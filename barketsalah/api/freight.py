@@ -54,6 +54,8 @@ def make_opportunity(shipping_request: str) -> str:
     opp.party_name = sr.customer
     opp.customer_name = frappe.db.get_value("Customer", sr.customer, "customer_name") or sr.customer
     opp.custom_shipping_request = sr.name
+    if sr.get("insurance_requested"):
+        opp.custom_insurance_requested = 1
     opp.status = "Open"
     opp.insert(ignore_permissions=True)
 

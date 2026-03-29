@@ -16,6 +16,7 @@
   "container_type",
   "incoterm",
   "delivery_type",
+  "insurance_requested",
   "cargo_value",
   "section_break_trnw",
   "origin_country",
@@ -161,10 +162,16 @@
    "fieldname": "port_of_arrival",
    "fieldtype": "Data",
    "label": "Port of Arrival"
+  },
+  {
+   "default": "0",
+   "fieldname": "insurance_requested",
+   "fieldtype": "Check",
+   "label": "Insurance Requested"
   }
  ],
  "links": [],
- "modified": "2026-03-29 05:35:46.734335",
+ "modified": "2026-03-29 12:07:32.407613",
  "modified_by": "Administrator",
  "module": "Barketsalah",
  "name": "Shipping Request",
