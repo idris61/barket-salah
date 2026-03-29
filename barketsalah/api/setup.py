@@ -48,6 +48,15 @@ def _sync_opportunity_insurance_flag(opportunity_name: str | None) -> None:
         log_api_event("setup.sync_insurance.skipped_missing_opportunity")
         return
 
+    if not frappe.get_meta("Opportunity").has_field("custom_shipping_request"):
+        log_api_event(
+            "setup.sync_insurance.skipped_missing_opportunity_field",
+            opportunity=opportunity_name,
+            fieldname="custom_shipping_request",
+            level="warning",
+        )
+        return
+
     shipping_request = frappe.db.get_value("Opportunity", opportunity_name, "custom_shipping_request")
     if not shipping_request:
         log_api_event(
@@ -137,6 +146,28 @@ def quotation_create_sales_order_on_accept(doc, method=None) -> None:
     from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
     sales_order = make_sales_order(doc.name)
+    if doc.get("opportunity") and frappe.get_meta("Sales Order").has_field("custom_shipping_request"):
+        shipping_request = None
+        if frappe.get_meta("Opportunity").has_field("custom_shipping_request"):
+            shipping_request = frappe.db.get_value(
+                "Opportunity", doc.get("opportunity"), "custom_shipping_request"
+            )
+
+        if shipping_request:
+            sales_order.custom_shipping_request = shipping_request
+            log_api_event(
+                "setup.create_so_on_accept.set_shipping_request",
+                quotation=doc.get("name"),
+                opportunity=doc.get("opportunity"),
+                shipping_request=shipping_request,
+            )
+        else:
+            log_api_event(
+                "setup.create_so_on_accept.skipped_set_shipping_request",
+                quotation=doc.get("name"),
+                opportunity=doc.get("opportunity"),
+            )
+
     default_delivery_date = add_days(getdate(doc.get("transaction_date") or nowdate()), 7)
     sales_order.delivery_date = default_delivery_date
     for item in sales_order.get("items") or []:
