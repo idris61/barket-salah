@@ -134,6 +134,27 @@ def create_user_from_website():
     )
 
     user.insert(ignore_permissions=True)
+
+    # Safety net: ensure role is persisted even if initial child-table payload is dropped.
+    has_default_role = frappe.db.exists(
+        "Has Role",
+        {
+            "parenttype": "User",
+            "parent": user.name,
+            "role": DEFAULT_WEBSITE_ROLE,
+        },
+    )
+    if not has_default_role:
+        user.reload()
+        user.append("roles", {"role": DEFAULT_WEBSITE_ROLE})
+        user.save(ignore_permissions=True)
+        log_api_event(
+            "create_user.default_role_forced_after_insert",
+            email=mask_email(email),
+            user=user.name,
+            role=DEFAULT_WEBSITE_ROLE,
+        )
+
     log_api_event(
         "create_user.user_created",
         email=mask_email(email),
@@ -142,9 +163,3 @@ def create_user_from_website():
     )
 
     return {"status": "created"}
-
-
-@frappe.whitelist(allow_guest=True)
-def test_endpoint():
-    log_api_event("create_user.test_endpoint_called")
-    return {"message": "ok"}
