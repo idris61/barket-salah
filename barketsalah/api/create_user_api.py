@@ -8,6 +8,8 @@ from frappe.exceptions import PermissionError, ValidationError
 from frappe.utils import validate_email_address
 from barketsalah.api.utils import log_api_event, mask_email
 
+DEFAULT_WEBSITE_ROLE = "Custom Guest"
+
 
 def _normalize_email(email: str) -> str:
     return (email or "").strip().lower()
@@ -116,6 +118,10 @@ def create_user_from_website():
         log_api_event("create_user.user_exists", email=mask_email(email))
         return {"status": "exists"}
 
+    if not frappe.db.exists("Role", DEFAULT_WEBSITE_ROLE):
+        log_api_event("create_user.default_role_missing", level="error", role=DEFAULT_WEBSITE_ROLE)
+        frappe.throw(_("Default role is missing: {0}").format(DEFAULT_WEBSITE_ROLE), ValidationError)
+
     user = frappe.get_doc(
         {
             "doctype": "User",
@@ -123,11 +129,17 @@ def create_user_from_website():
             "first_name": first_name,
             "enabled": 1,
             "send_welcome_email": 0,
+            "roles": [{"role": DEFAULT_WEBSITE_ROLE}],
         }
     )
 
     user.insert(ignore_permissions=True)
-    log_api_event("create_user.user_created", email=mask_email(email), user=user.name)
+    log_api_event(
+        "create_user.user_created",
+        email=mask_email(email),
+        user=user.name,
+        role=DEFAULT_WEBSITE_ROLE,
+    )
 
     return {"status": "created"}
 
