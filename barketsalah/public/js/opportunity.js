@@ -1,25 +1,65 @@
+// Copyright (c) 2026, barketsalah and contributors
+// Opportunity UX: only allow creating Supplier Quotation from the Create menu,
+// and style the Create button as primary (black in this theme).
+
 frappe.ui.form.on("Opportunity", {
 	refresh(frm) {
-		if (frm.is_new() || frm.doc.docstatus === 2) {
-			return;
-		}
-
-		frm.add_custom_button(__("Generate Carrier Quotes"), () => {
-			frappe.call({
-				method: "barketsalah.api.freight.generate_quotes",
-				args: {
-					opportunity: frm.doc.name,
-				},
-				freeze: true,
-				callback(r) {
-					const created = r.message || [];
-					frappe.msgprint(
-						created.length
-							? __("Carrier quotations created: {0}", [created.join(", ")])
-							: __("No new carrier quotations were created."),
-					);
-				},
-			});
+		// Limit create menu options to Supplier Quotation only
+		const create_group = __("Create");
+		const keep = new Set([__("Supplier Quotation")]);
+		[
+			__("Quotation"),
+			__("Request For Quotation"),
+			__("Customer"),
+		].forEach((label) => {
+			if (!keep.has(label)) {
+				frm.remove_custom_button(label, create_group);
+			}
 		});
+
+		// Some buttons may be added conditionally after refresh; retry once.
+		setTimeout(() => {
+			[
+				__("Quotation"),
+				__("Request For Quotation"),
+				__("Customer"),
+			].forEach((label) => frm.remove_custom_button(label, create_group));
+		}, 0);
+
+		style_create_menu_primary(frm);
+	},
+
+	onload_post_render(frm) {
+		// Ensure styling after page actions are mounted
+		style_create_menu_primary(frm);
 	},
 });
+
+function style_create_menu_primary(frm) {
+	// The "Create" menu is a dropdown in the page actions area.
+	const try_apply = () => {
+		const $wrap = $(frm.page?.wrapper || frm.wrapper);
+		const create_labels = new Set([__("Create"), __("Oluştur"), "Create"]);
+
+		// Prefer matching dropdown toggle by its visible label
+		let $target = $wrap
+			.find(".page-actions .btn-group .dropdown-toggle")
+			.filter((_, el) => create_labels.has($(el).text().trim()))
+			.first();
+
+		// Fallback: in some layouts the create button is the first actions dropdown
+		if (!$target.length) {
+			$target = $wrap.find(".page-actions .btn-group .dropdown-toggle").first();
+		}
+
+		if ($target.length) {
+			$target.removeClass("btn-default btn-secondary btn-light").addClass("btn-primary");
+		}
+	};
+
+	// Apply a few times to beat async renders
+	setTimeout(try_apply, 0);
+	setTimeout(try_apply, 150);
+	setTimeout(try_apply, 600);
+}
+

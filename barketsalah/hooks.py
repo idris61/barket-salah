@@ -2,7 +2,7 @@ app_name = "barketsalah"
 app_title = "Barketsalah"
 app_publisher = "barketsalah"
 app_description = "barketsalah"
-app_email = "developerinfo64@gmail.com"
+app_email = "idris.gemici61@gmail.com"
 app_license = "mit"
 
 # Apps
@@ -25,7 +25,7 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/barketsalah/css/barketsalah.css"
+app_include_css = "/assets/barketsalah/css/barketsalah.css"
 # app_include_js = "/assets/barketsalah/js/barketsalah.js"
 
 # include js, css files in header of web template
@@ -45,7 +45,14 @@ app_license = "mit"
 # include js in doctype views
 doctype_js = {
 	"Opportunity": "public/js/opportunity.js",
+	"Quotation": "public/js/quotation.js",
 	"Sales Order": "public/js/sales_order.js",
+	"Supplier Quotation": "public/js/supplier_quotation.js",
+}
+
+doctype_list_js = {
+	"Quotation": "public/js/quotation_list.js",
+	"Supplier Quotation": "public/js/supplier_quotation_list.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -136,16 +143,32 @@ fixtures = [
 	{
 		"dt": "Custom Field",
 		"filters": [["module", "=", "Barketsalah"]],
-	}
+	},
+	{
+		"dt": "Property Setter",
+		"filters": [["module", "=", "Barketsalah"]],
+	},
 ]
 
+override_whitelisted_methods = {
+	"erpnext.crm.doctype.opportunity.opportunity.make_supplier_quotation": "barketsalah.api.opportunity_mapper.make_supplier_quotation_from_opportunity",
+}
+
 doc_events = {
+	"Supplier Quotation": {
+		"before_save": "barketsalah.api.supplier_quotation_sync.supplier_quotation_before_save",
+		"before_cancel": "barketsalah.api.link_cleanup.supplier_quotation_before_cancel",
+		"on_trash": "barketsalah.api.link_cleanup.supplier_quotation_on_trash",
+	},
 	"Quotation": {
-		"before_validate": "barketsalah.api.quote_to_salesorder.prepare_quote_items_for_sales_order",
 		"before_save": "barketsalah.api.setup.quotation_before_save",
-		"on_submit": "barketsalah.api.setup.quotation_create_sales_order_on_accept",
-		"on_update_after_submit": "barketsalah.api.setup.quotation_create_sales_order_on_accept",
-	}
+		"before_cancel": "barketsalah.api.link_cleanup.quotation_before_cancel",
+		"on_submit": "barketsalah.api.setup.quotation_submit_create_invoices_on_accept",
+		"on_trash": "barketsalah.api.link_cleanup.quotation_on_trash",
+	},
+	"Opportunity": {
+		"on_trash": "barketsalah.api.link_cleanup.opportunity_on_trash",
+	},
 }
 
 # Document Events

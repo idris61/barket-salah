@@ -1,18 +1,10 @@
 import frappe
 from frappe import _
-from frappe.utils import add_days, nowdate
+from frappe.utils import add_days, flt, nowdate
+
+from barketsalah.api.charge_selection import list_charge_type_names_for_shipping_request
+from barketsalah.api.items import ensure_service_item
 from barketsalah.api.utils import log_api_event
-
-
-def _get_default_item_group() -> str:
-    item_group = frappe.db.get_value("Item Group", "All Item Groups", "name")
-    if item_group:
-        return item_group
-
-    fallback = frappe.db.get_value("Item Group", {}, "name")
-    if not fallback:
-        frappe.throw(_("No Item Group found. Please create an Item Group first."))
-    return fallback
 
 
 def _get_default_uom() -> str:
@@ -24,23 +16,6 @@ def _get_default_uom() -> str:
     if not fallback:
         frappe.throw(_("No UOM found. Please create a UOM first."))
     return fallback
-
-
-def _ensure_ocean_freight_item() -> str:
-    item_code = "Ocean Freight"
-    if frappe.db.exists("Item", item_code):
-        return item_code
-
-    item = frappe.new_doc("Item")
-    item.item_code = item_code
-    item.item_name = item_code
-    item.item_group = _get_default_item_group()
-    item.stock_uom = _get_default_uom()
-    item.is_stock_item = 0
-    item.insert(ignore_permissions=True)
-
-    return item_code
-
 
 
 @frappe.whitelist()
@@ -116,85 +91,178 @@ def make_opportunity(shipping_request: str) -> str:
     return opp.name
 
 
+def _company_for_opportunity_buying(opportunity_name: str) -> str:
+    company = frappe.db.get_value("Opportunity", opportunity_name, "company")
+    if company:
+        return company
+    company = frappe.defaults.get_user_default("Company")
+    if company:
+        return company
+    company = frappe.db.get_single_value("Global Defaults", "default_company")
+    if company:
+        return company
+    frappe.throw(
+        _("Set Company on the Opportunity, or a user / global default Company, before creating supplier quotations.")
+    )
+
+
+def _company_default_currency(company: str) -> str:
+    currency = frappe.db.get_value("Company", company, "default_currency")
+    if not currency:
+        frappe.throw(_("Company {0} has no default currency.").format(company))
+    return currency
+
+
+def _open_supplier_quotation_exists(opportunity: str, supplier: str) -> bool:
+    return bool(
+        frappe.get_all(
+            "Supplier Quotation",
+            filters={
+                "opportunity": opportunity,
+                "supplier": supplier,
+                "docstatus": ["<", 2],
+            },
+            limit=1,
+            pluck="name",
+        )
+    )
+
+
+def _shipping_request_for_opportunity(opportunity_name: str, linked_name: str | None) -> str | None:
+    """
+    Prefer Opportunity.custom_shipping_request when valid; otherwise resolve via
+    Shipping Request.opportunity (SR → Fırsat zinciri, fırsatta link bazen boş kalabiliyor).
+    """
+    if linked_name and frappe.db.exists("Shipping Request", linked_name):
+        return linked_name
+    candidates = frappe.get_all(
+        "Shipping Request",
+        filters={"opportunity": opportunity_name},
+        fields=["name", "customer"],
+        order_by="modified desc",
+    )
+    if not candidates:
+        return None
+    party = frappe.db.get_value("Opportunity", opportunity_name, "party_name")
+    if party:
+        for row in candidates:
+            if row.get("customer") == party:
+                return row.name
+    return candidates[0].name
+
+
 @frappe.whitelist()
-def generate_quotes(opportunity: str) -> list[str]:
+def generate_carrier_supplier_quotations(opportunity: str) -> list[str]:
+    """One draft Supplier Quotation per transporter supplier, lines from Charge Types filtered by Shipping Request."""
+    log_api_event("freight.generate_carrier_supplier_quotations.started", opportunity=opportunity)
     opp = frappe.get_doc("Opportunity", opportunity)
 
-    if not opp.party_name:
-        frappe.throw(_("Opportunity must have a Customer."))
-
-    shipping_request = opp.get("custom_shipping_request")
+    shipping_request = _shipping_request_for_opportunity(opp.name, opp.get("custom_shipping_request"))
     if shipping_request and not frappe.db.exists("Shipping Request", shipping_request):
         frappe.throw(_("Linked Shipping Request {0} was not found.").format(shipping_request))
 
+    if (
+        shipping_request
+        and frappe.get_meta("Opportunity").has_field("custom_shipping_request")
+        and not opp.get("custom_shipping_request")
+    ):
+        frappe.db.set_value(
+            "Opportunity",
+            opp.name,
+            "custom_shipping_request",
+            shipping_request,
+            update_modified=False,
+        )
+        opp.custom_shipping_request = shipping_request
+
+    company = _company_for_opportunity_buying(opp.name)
+    currency = _company_default_currency(company)
+
+    charge_names = list_charge_type_names_for_shipping_request(shipping_request)
+    if not charge_names:
+        frappe.throw(
+            _(
+                "No charge lines apply for this shipping request. Check default Charge Types "
+                "(and categories: Insurance only when requested; Ocean only for Sea; dangerous-goods-only rows)."
+            )
+        )
+
     carriers = frappe.get_all(
         "Supplier",
-        filters={"disabled": 0},
-        or_filters={"is_transporter": 1, "supplier_type": "Carrier"},
+        filters={"disabled": 0, "is_transporter": 1},
         fields=["name"],
         order_by="name asc",
     )
     if not carriers:
-        frappe.throw(_("No carrier suppliers found."))
+        frappe.throw(_("No suppliers are marked as transporter (Nakliyeci)."))
 
-    charge_types = frappe.get_all(
-        "Charge Type",
-        filters={"is_default": 1},
-        fields=["name", "category"],
-        order_by="name asc",
-    )
-    if not charge_types:
-        frappe.throw(_("No default Charge Type records found."))
-
-    item_code = _ensure_ocean_freight_item()
-    created_quotes = []
+    valid_till = add_days(nowdate(), 14)
+    created: list[str] = []
 
     for carrier in carriers:
-        carrier_name = carrier.name
-
-        if frappe.db.exists(
-            "Quotation",
-            {
-                "opportunity": opp.name,
-                "custom_carrier_company": carrier_name,
-                "docstatus": ["<", 2],
-            },
-        ):
+        supplier_name = carrier.name
+        if _open_supplier_quotation_exists(opp.name, supplier_name):
+            log_api_event(
+                "freight.generate_carrier_supplier_quotations.skipped_existing",
+                opportunity=opp.name,
+                supplier=supplier_name,
+            )
             continue
 
-        quotation = frappe.new_doc("Quotation")
-        quotation.quotation_to = "Customer"
-        quotation.party_name = opp.party_name
-        quotation.customer_name = (
-            frappe.db.get_value("Customer", opp.party_name, "customer_name") or opp.party_name
-        )
-        quotation.opportunity = opp.name
-        quotation.transaction_date = nowdate()
-        quotation.valid_till = add_days(nowdate(), 7)
-        quotation.custom_carrier_company = carrier_name
-        quotation.custom_custom_quote_status = "Draft"
-        quotation.append(
-            "items",
-            {
-                "item_code": item_code,
-                "qty": 1,
-                "rate": 0,
-            },
-        )
+        sq = frappe.new_doc("Supplier Quotation")
+        sq.supplier = supplier_name
+        sq.company = company
+        sq.currency = currency
+        sq.conversion_rate = 1.0
+        sq.transaction_date = nowdate()
+        sq.valid_till = valid_till
+        sq.opportunity = opp.name
+        if frappe.get_meta("Supplier Quotation").has_field("custom_shipping_request") and shipping_request:
+            sq.custom_shipping_request = shipping_request
 
-        for charge in charge_types:
-            quotation.append(
-                "custom_charges_child_table",
+        for charge_name in charge_names:
+            item_code = ensure_service_item(charge_name)
+            stock_uom = frappe.db.get_value("Item", item_code, "stock_uom") or _get_default_uom()
+            sq.append(
+                "items",
                 {
-                    "charge_type": charge.name,
-                    "amount": 0,
+                    "item_code": item_code,
+                    "qty": 1,
+                    "rate": flt(0),
+                    "uom": stock_uom,
+                    "stock_uom": stock_uom,
+                    "conversion_factor": 1,
                 },
             )
 
-        quotation.insert(ignore_permissions=True)
-        created_quotes.append(quotation.name)
+        sq.run_method("set_missing_values")
+        sq.insert(ignore_permissions=True)
+        created.append(sq.name)
+        log_api_event(
+            "freight.generate_carrier_supplier_quotations.created",
+            opportunity=opp.name,
+            supplier=supplier_name,
+            supplier_quotation=sq.name,
+        )
 
-    return created_quotes
+    if created:
+        # ERPNext standard Opportunity status (options include "Quotation").
+        terminal = frozenset({"Lost", "Closed", "Converted"})
+        if opp.status not in terminal:
+            frappe.db.set_value(
+                "Opportunity",
+                opp.name,
+                "status",
+                "Quotation",
+                update_modified=True,
+            )
+        log_api_event(
+            "freight.generate_carrier_supplier_quotations.opportunity_status_set",
+            opportunity=opp.name,
+            created=len(created),
+        )
+
+    return created
 
 
 @frappe.whitelist()

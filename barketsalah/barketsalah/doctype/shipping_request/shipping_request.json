@@ -1,10 +1,12 @@
 {
  "actions": [],
- "allow_rename": 1,
+ "allow_rename": 0,
+ "autoname": "naming_series:",
  "creation": "2026-03-12 05:32:07.970334",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "customer",
   "status",
   "opportunity",
@@ -32,6 +34,16 @@
   "notes"
  ],
  "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "options": "SHIP-REQ-.YYYY.-",
+   "print_hide": 1,
+   "reqd": 1,
+   "set_only_once": 1
+  },
   {
    "fieldname": "customer",
    "fieldtype": "Link",
@@ -99,7 +111,7 @@
    "label": "Dangerous Goods"
   },
   {
-   "description": "EXW (Ex Works): Sat\u0131c\u0131 mallar\u0131 kendi tesisinde haz\u0131r eder, t\u00fcm ta\u015f\u0131ma ve g\u00fcmr\u00fck i\u015flemlerini al\u0131c\u0131 \u00fcstlenir.\nFOB (Free On Board): Sat\u0131c\u0131 mallar\u0131 y\u00fckleme liman\u0131nda gemiye y\u00fckler, y\u00fcklemeden sonra risk ve masraflar al\u0131c\u0131ya ge\u00e7er.\nCIF (Cost, Insurance and Freight): Sat\u0131c\u0131 var\u0131\u015f liman\u0131na kadar navlun ve sigortay\u0131 \u00f6der, ancak risk y\u00fckleme liman\u0131nda al\u0131c\u0131ya ge\u00e7er.\nDAP (Delivered At Place): Sat\u0131c\u0131 mallar\u0131 belirtilen var\u0131\u015f noktas\u0131na kadar getirir, ithalat g\u00fcmr\u00fc\u011f\u00fc ve vergiler al\u0131c\u0131ya aittir.\nDDP (Delivered Duty Paid): Sat\u0131c\u0131 mallar\u0131 al\u0131c\u0131n\u0131n kap\u0131s\u0131na kadar getirir ve t\u00fcm ta\u015f\u0131ma, g\u00fcmr\u00fck ve vergileri \u00f6der.",
+   "description": "Incoterms: EXW - goods at seller premises; FOB - loaded on vessel at port of loading; CIF - freight and insurance to destination port (risk at loading); DAP - delivered to named place (buyer imports); DDP - delivered with duties paid by seller.",
    "fieldname": "incoterm",
    "fieldtype": "Select",
    "hidden": 1,
@@ -124,7 +136,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nDraft\nSubmitted\nConverted to Opportunity"
+   "options": "\nDraft\nConverted to Opportunity"
   },
   {
    "fieldname": "opportunity",
@@ -151,7 +163,7 @@
   {
    "fieldname": "dangerous_doc",
    "fieldtype": "Attach",
-   "label": "Dangerous Doc"
+   "label": "Dangerous Goods Document"
   },
   {
    "fieldname": "port_of_departure",
@@ -170,7 +182,23 @@
    "label": "Insurance Requested"
   }
  ],
- "links": [],
+ "links": [
+  {
+   "group": "CRM",
+   "link_doctype": "Opportunity",
+   "link_fieldname": "custom_shipping_request"
+  },
+  {
+   "group": "Sales",
+   "link_doctype": "Sales Order",
+   "link_fieldname": "custom_shipping_request"
+  },
+  {
+   "group": "Buying",
+   "link_doctype": "Supplier Quotation",
+   "link_fieldname": "custom_shipping_request"
+  }
+ ],
  "modified": "2026-04-07 13:25:44.356516",
  "modified_by": "Administrator",
  "module": "Barketsalah",

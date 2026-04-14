@@ -9,6 +9,7 @@
   "charge_name",
   "category",
   "is_default",
+  "only_for_dangerous_goods",
   "column_break_gxgz",
   "description"
  ],
@@ -39,6 +40,13 @@
    "label": "Is Default"
   },
   {
+   "default": "0",
+   "description": "If set, this charge is only included when the linked Shipping Request has Dangerous Goods checked.",
+   "fieldname": "only_for_dangerous_goods",
+   "fieldtype": "Check",
+   "label": "Only for dangerous goods"
+  },
+  {
    "fieldname": "column_break_gxgz",
    "fieldtype": "Column Break"
   }
@@ -46,7 +54,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-07 13:23:00.111390",
+ "modified": "2026-04-12 14:30:00.000000",
  "modified_by": "Administrator",
  "module": "Barketsalah",
  "name": "Charge Type",

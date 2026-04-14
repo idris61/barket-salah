@@ -1,0 +1,79 @@
+Shipping Request,Nakliye Talebi
+Series,Seri
+Barketsalah,Barketsalah
+Customer,Müşteri
+Transport Mode,Taşıma Modu
+Sea,Deniz
+Air,Hava
+Road,Kara
+Rail,Demiryolu
+Container Type,Konteyner Tipi
+Origin Country,Menşe ülke
+Origin City,Menşe şehir
+Destination Country,Varış ülkesi
+Destination City,Varış şehri
+Pickup Address,Yükleme adresi
+Delivery Address,Teslimat adresi
+Cargo Ready Date,Yükün hazır olma tarihi
+Cargo Value,Yük değeri
+Dangerous Goods,Tehlikeli madde
+Dangerous Goods Document,Tehlikeli madde belgesi
+Incoterm,Teslim şekli (Incoterm)
+Delivery Type,Teslimat tipi
+Port to Port,Limandan limana
+Port to Warehouse,Limandan depoya
+Warehouse to Port,Depodan limana
+Warehouse to Warehouse,Depodan depoya
+Notes,Notlar
+Status,Durum
+Draft,Taslak
+Converted to Opportunity,Fırsata dönüştürüldü
+Opportunity,Fırsat
+Quotation,Teklif
+Insurance Requested,Sigorta talep edildi
+Port of Departure,Kalkış limanı
+Port of Arrival,Varış limanı
+Make Opportunity,Fırsat oluştur
+Dangerous Goods Document Required,Tehlikeli madde belgesi gerekli
+Please upload a document in the Dangerous Goods Document field before saving this Shipping Request.,Kaydetmeden önce Tehlikeli madde belgesi alanına bir dosya yükleyin.
+Please upload a document in the Dangerous Goods Document field when Dangerous Goods is checked.,Tehlikeli madde işaretliyken Tehlikeli madde belgesi alanına bir dosya yüklemeniz gerekir.
+"Incoterms: EXW - goods at seller premises; FOB - loaded on vessel at port of loading; CIF - freight and insurance to destination port (risk at loading); DAP - delivered to named place (buyer imports); DDP - delivered with duties paid by seller.","Incoterms: EXW - mal satıcının tesliminde; FOB - yükleme limanında gemiye yüklenir; CIF - varış limanına kadar navlun ve sigorta (risk yüklemede alıcıya geçer); DAP - adı geçen yere teslim (ithalat alıcıda); DDP - tüm gümrük ve vergiler satıcıda, kapıya teslim."
+Create Carrier Supplier Quotations,Nakliyeci tedarikçi fiyat teklifleri oluştur
+Carrier supplier quotations created: {0},Oluşturulan tedarikçi teklifleri: {0}
+"No new carrier supplier quotations were created. Each transporter may already have an open quotation for this opportunity.",Yeni nakliyeci tedarikçi teklifi oluşturulmadı. Her nakliyeci için bu fırsatta zaten açık bir teklif olabilir.
+Other carrier quotations created: {0},Oluşturulan diğer nakliyeci teklifleri: {0}
+No suppliers are marked as transporter (Nakliyeci).,Nakliyeci olarak işaretlenmiş tedarikçi yok.
+"Set Company on the Opportunity, or a user / global default Company, before creating supplier quotations.","Tedarikçi teklifi oluşturmadan önce Fırsat üzerinde Şirket alanını doldurun veya kullanıcı / genel varsayılan şirketi ayarlayın."
+Company {0} has no default currency.,{0} şirketinde varsayılan para birimi tanımlı değil.
+"No charge lines apply for this shipping request. Check default Charge Types (and categories: Insurance only when requested; Ocean only for Sea; dangerous-goods-only rows).","Bu nakliye talebine uygun ücret satırı yok. Varsayılan Charge Type kayıtlarını kontrol edin (Insurance yalnızca sigorta talebinde; Ocean yalnızca denizde; yalnızca tehlikeli madde satırları)."
+Only for dangerous goods,Tehlikeli madde taleplerinde
+Create customer quotation,Müşteri teklifi oluştur
+Create,Oluştur
+Supplier Quotation must be linked to an Opportunity.,Tedarikçi fiyat teklifi bir Fırsata bağlı olmalıdır.
+A customer quotation already exists for this supplier quotation: {0},Bu tedarikçi teklifi için zaten bir müşteri teklifi var: {0}
+Already exists,Zaten mevcut
+Open customer quotation,Müşteri teklifini aç
+Creating...,Oluşturuluyor...
+Supplier Quotation has no item lines to copy.,Kopyalanacak kalem satırı yok (tedarikçi teklifi).
+"Draft sales invoice {0} was created.",Taslak satış faturası {0} oluşturuldu.
+"Draft purchase invoice {0} was created.",Taslak satınalma faturası {0} oluşturuldu.
+"Submit supplier quotation {0} first; purchase invoice was not created.",Önce tedarikçi teklifini {0} onaylayın; satınalma faturası oluşturulmadı.
+Accepted,Kabul edildi
+Rejected,Reddedildi
+Sent,Gönderildi
+Carrier (supplier name),Taşıyıcı (tedarikçi adı)
+Supplier name from the linked carrier quotation (read-only).,Bağlı nakliyeci tedarikçi teklifindeki tedarikçi adı (salt okunur).
+Customer (Shipping Request),Müşteri (nakliye talebi)
+Quote Status,Teklif durumu
+Customer decision,Müşteri kararı
+Customer Quotation,Müşteri fiyat teklifi
+Pending,Beklemede
+Won,Kazanan
+Lost,Kaybeden
+More Info,Ek bilgiler
+Purchase Invoice,Satınalma faturası
+Source Supplier Quotation,Kaynak tedarikçi fiyat teklifi
+Carrier cost basis used to build this customer quotation.,Bu müşteri teklifinin temel aldığı nakliyeci maliyet teklifi.
+Draft sales invoice created when this quotation is submitted as Accepted.,Bu teklif Kabul edildi olarak onaylandığında oluşturulan taslak satış faturası.
+Draft purchase invoice created when the linked customer quotation is submitted as Accepted.,Bağlı müşteri teklifi Kabul edildi olarak onaylandığında oluşturulan taslak satınalma faturası.
+Total Profit,Toplam Kâr
