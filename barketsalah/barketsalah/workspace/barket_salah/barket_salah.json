@@ -1,7 +1,7 @@
 {
  "app": "barketsalah",
  "charts": [],
- "content": "[{\"id\":\"vYc930AAFG\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the Barket Salah workspace</span>\",\"col\":12}},{\"id\":\"c30KaHnxXf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Shipping Request\",\"col\":7}},{\"id\":\"amqcLiciiu\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Opportunity\",\"col\":7}},{\"id\":\"lCW2VsX_S9\",\"type\":\"header\",\"data\":{\"text\":\"<br>\",\"col\":12}},{\"id\":\"dDclHJkjuy\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Supplier Quotation\",\"col\":7}},{\"id\":\"TQJmTnP-NU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Purchase Invoice\",\"col\":7}},{\"id\":\"O4CZcwjtRz\",\"type\":\"header\",\"data\":{\"text\":\"<br>\",\"col\":12}},{\"id\":\"jgWVsAffTf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Quotation\",\"col\":7}},{\"id\":\"okDm8sDnYo\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Order\",\"col\":7}},{\"id\":\"LEnZnSwzt_\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Invoice\",\"col\":7}},{\"id\":\"c-fF8nxYnv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"\u00d6deme Giri\u015fi\",\"col\":7}},{\"id\":\"Fbp8W8sKAs\",\"type\":\"header\",\"data\":{\"text\":\"<br>\",\"col\":12}},{\"id\":\"KIcbWGOTnf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":7}},{\"id\":\"81nqWxNk4i\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Supplier\",\"col\":7}}]",
+ "content": "[{\"id\":\"vYc930AAFG\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Welcome to the Barket Salah workspace</span>\",\"col\":12}},{\"id\":\"c30KaHnxXf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Shipping Request\",\"col\":7}},{\"id\":\"amqcLiciiu\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Opportunity\",\"col\":7}},{\"id\":\"lCW2VsX_S9\",\"type\":\"header\",\"data\":{\"text\":\"<br>\",\"col\":12}},{\"id\":\"dDclHJkjuy\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Supplier Quotation\",\"col\":7}},{\"id\":\"TQJmTnP-NU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Purchase Invoice\",\"col\":7}},{\"id\":\"O4CZcwjtRz\",\"type\":\"header\",\"data\":{\"text\":\"<br>\",\"col\":12}},{\"id\":\"jgWVsAffTf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Quotation\",\"col\":7}},{\"id\":\"okDm8sDnYo\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Order\",\"col\":7}},{\"id\":\"LEnZnSwzt_\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sales Invoice\",\"col\":7}},{\"id\":\"c-fF8nxYnv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"\u00d6deme Giri\u015fi\",\"col\":7}},{\"id\":\"Fbp8W8sKAs\",\"type\":\"header\",\"data\":{\"text\":\"<br>\",\"col\":12}},{\"id\":\"AA7g7Ss3hm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Cargo App Shipment\",\"col\":7}},{\"id\":\"YkxYCGMXI8\",\"type\":\"header\",\"data\":{\"text\":\"<br>\",\"col\":12}},{\"id\":\"KIcbWGOTnf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":7}},{\"id\":\"81nqWxNk4i\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Supplier\",\"col\":7}}]",
  "creation": "2026-04-12 11:48:00.446974",
  "custom_blocks": [],
  "docstatus": 0,
@@ -15,7 +15,7 @@
  "label": "Barket Salah",
  "link_type": "DocType",
  "links": [],
- "modified": "2026-04-14 11:22:34.443674",
+ "modified": "2026-04-14 12:33:00.878303",
  "modified_by": "Administrator",
  "module": "Barketsalah",
  "name": "Barket Salah",
@@ -39,6 +39,14 @@
    "doc_view": "List",
    "label": "Shipping Request",
    "link_to": "Shipping Request",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Cargo App Shipment",
+   "link_to": "Cargo App Shipment",
    "stats_filter": "[]",
    "type": "DocType"
   },
