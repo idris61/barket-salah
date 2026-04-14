@@ -5,17 +5,8 @@ frappe.ui.form.on("Sales Order", {
 		}
 
 		frm.add_custom_button(__("Create Shipment"), () => {
-			frappe.call({
-				method: "barketsalah.api.freight.create_shipment",
-				args: {
-					sales_order: frm.doc.name,
-				},
-				freeze: true,
-				callback(r) {
-					if (r.message) {
-						frappe.set_route("Form", "Shipments", r.message);
-					}
-				},
+			frappe.new_doc("Cargo App Shipment", {
+				sales_order: frm.doc.name,
 			});
 		});
 	},

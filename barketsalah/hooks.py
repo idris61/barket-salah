@@ -163,7 +163,6 @@ doc_events = {
 	"Quotation": {
 		"before_save": "barketsalah.api.setup.quotation_before_save",
 		"before_cancel": "barketsalah.api.link_cleanup.quotation_before_cancel",
-		"on_submit": "barketsalah.api.setup.quotation_submit_create_invoices_on_accept",
 		"on_trash": "barketsalah.api.link_cleanup.quotation_on_trash",
 	},
 	"Opportunity": {
