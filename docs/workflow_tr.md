@@ -30,7 +30,7 @@ Bu belge, Barketsalah uygulamasının ERPNext üzerindeki hedef iş sürecini ö
 
 ## 5. Faturalar ve ödeme
 
-- Müşteri teklifi **Gönderildi** (*Submit*) edilirken *Quote Status* = *Accepted* ise: taslak **Satış Faturası** (*Sales Invoice*) ve (kaynak tedarikçi teklifi **onaylı** ise) taslak **Satınalma Faturası** (*Purchase Invoice*) otomatik oluşturulur; teklif ve tedarikçi teklifi üzerinde ilgili link alanları dolar. Tedarikçi teklifi henüz onaylı değilse satınalma faturası atlanır ve uyarı gösterilir.
+- Müşteri teklifi **Gönderildi** (*Submit*) edilirken *Quote Status* = *Accepted* ise: taslak **Satış Siparişi** (*Sales Order*), taslak **Satış Faturası** (*Sales Invoice*) ve (kaynak tedarikçi teklifi **onaylı** ise) taslak **Satınalma Faturası** (*Purchase Invoice*) otomatik oluşturulur; teklif ve tedarikçi teklifi üzerinde ilgili link alanları dolar. Tedarikçi teklifi henüz onaylı değilse satınalma faturası atlanır ve uyarı gösterilir.
 - **Ödeme:** ERPNext **Ödeme Girişi** (*Payment Entry*) ile satış ve satınalma faturalarına standart tahsilat / ödeme kaydı.
 - **Sevkiyat:** İhtiyaç halinde satış siparişi / sevkiyat adımları ERPNext standart akışıyla devam edebilir (uygulama şu aşamada doğrudan faturayı önceliklendirir).
 

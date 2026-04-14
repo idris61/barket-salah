@@ -204,7 +204,7 @@ def quotation_submit_create_invoices_on_accept(doc, method=None) -> None:
         log_api_event("setup.submit_invoices.skipped_not_accepted", quotation=doc.name)
         return
 
-    from erpnext.selling.doctype.quotation.quotation import make_sales_invoice
+    from erpnext.selling.doctype.quotation.quotation import make_sales_invoice, make_sales_order
 
     if frappe.get_meta("Quotation").has_field("custom_sales_invoice"):
         existing_si = doc.get("custom_sales_invoice") or frappe.db.get_value(
@@ -232,6 +232,44 @@ def quotation_submit_create_invoices_on_accept(doc, method=None) -> None:
                 alert=True,
             )
             log_api_event("setup.submit_invoices.si_created", quotation=doc.name, sales_invoice=si.name)
+
+    if frappe.get_meta("Quotation").has_field("custom_sales_order"):
+        existing_so = doc.get("custom_sales_order") or frappe.db.get_value(
+            "Quotation", doc.name, "custom_sales_order"
+        )
+        if existing_so and frappe.db.exists("Sales Order", existing_so):
+            log_api_event(
+                "setup.submit_sales_order.skipped_so_exists",
+                quotation=doc.name,
+                sales_order=existing_so,
+            )
+        else:
+            so = make_sales_order(doc.name)
+            so.flags.ignore_permissions = True
+
+            # If available, propagate Shipping Request from linked Opportunity to Sales Order.
+            if (
+                so.get("opportunity")
+                and frappe.get_meta("Opportunity").has_field("custom_shipping_request")
+                and frappe.get_meta("Sales Order").has_field("custom_shipping_request")
+            ):
+                sr = frappe.db.get_value("Opportunity", so.opportunity, "custom_shipping_request")
+                if sr:
+                    so.custom_shipping_request = sr
+
+            so.insert(ignore_permissions=True)
+            frappe.db.set_value(
+                "Quotation",
+                doc.name,
+                "custom_sales_order",
+                so.name,
+                update_modified=False,
+            )
+            frappe.msgprint(
+                _("Draft sales order {0} was created.").format(frappe.bold(so.name)),
+                alert=True,
+            )
+            log_api_event("setup.submit_sales_order.so_created", quotation=doc.name, sales_order=so.name)
 
     sq_name = doc.get("custom_source_supplier_quotation")
     if (

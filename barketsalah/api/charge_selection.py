@@ -7,46 +7,45 @@ import frappe
 from frappe.utils import cint
 
 
+@frappe.whitelist()
 def list_charge_type_names_for_shipping_request(shipping_request: str | None) -> list[str]:
     """
-    Returns Charge Type names (is_default=1) filtered by SR:
+    Returns `Charge Type.name` values (is_default=1) filtered by a Shipping Request (SR).
+
+    Notes:
+    - `Charge Type.name` is auto-named from `charge_name` in this app (so it's typically the human-readable value).
+    - This function is whitelisted so it can be called from the client.
+
+    Rules:
     - Category Insurance: only if insurance_requested.
     - Category Ocean: only for Sea (or blank transport_mode).
-    - only_for_dangerous_goods: only if dangerous_goods (field on Charge Type when present).
+    - only_for_dangerous_goods: only if dangerous_goods.
     """
-    sr = None
-    if shipping_request and frappe.db.exists("Shipping Request", shipping_request):
-        sr = frappe.get_doc("Shipping Request", shipping_request)
+    sr = (
+        frappe.db.get_value(
+            "Shipping Request",
+            shipping_request,
+            ["transport_mode", "insurance_requested", "dangerous_goods"],
+            as_dict=True,
+        )
+        if shipping_request
+        else None
+    )
 
     transport = ((sr.get("transport_mode") if sr else None) or "").strip()
     insurance = cint(sr.get("insurance_requested") if sr else 0)
     dangerous = cint(sr.get("dangerous_goods") if sr else 0)
 
-    meta = frappe.get_meta("Charge Type")
-    fields = ["name", "category"]
-    if meta.has_field("only_for_dangerous_goods"):
-        fields.append("only_for_dangerous_goods")
+    filters: list[list] = [["is_default", "=", 1]]
+    if not insurance:
+        filters.append(["category", "!=", "Insurance"])
+    if transport and transport != "Sea":
+        filters.append(["category", "!=", "Ocean"])
+    if not dangerous:
+        filters.append(["only_for_dangerous_goods", "!=", 1])
 
-    rows = frappe.get_all(
-        "Charge Type",
-        filters={"is_default": 1},
-        fields=fields,
-        order_by="name asc",
-    )
+    rows = frappe.get_all("Charge Type", filters=filters, fields=["name"], order_by="name asc")
     if not rows:
         return []
 
-    selected: list[str] = []
-    for row in rows:
-        cat = (row.get("category") or "").strip()
-
-        if cat == "Insurance" and not insurance:
-            continue
-        if cat == "Ocean" and transport and transport != "Sea":
-            continue
-        if row.get("only_for_dangerous_goods") and not dangerous:
-            continue
-
-        selected.append(row.name)
-
-    return selected
+    return [r.name for r in rows]
