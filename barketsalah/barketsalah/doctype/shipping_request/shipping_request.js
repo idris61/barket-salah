@@ -26,8 +26,8 @@ frappe.ui.form.on("Shipping Request", {
 					},
 				});
 			});
-			// Match primary action styling (theme uses black primary buttons).
-			btn?.addClass?.("btn-primary");
+			btn?.removeClass?.("btn-default btn-secondary btn-primary");
+			btn?.addClass?.("btn-danger barketsalah-btn-danger");
 		}
 	},
 

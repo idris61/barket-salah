@@ -10,7 +10,18 @@ frappe.listview_settings["Supplier Quotation"] = {
 		"supplier_name",
 		"grand_total",
 		"currency",
+		"status",
 	],
+
+	formatters: {
+		status(value) {
+			return barketsalah.list_status.formatter_html(value);
+		},
+	},
+
+	get_indicator(doc) {
+		return barketsalah.list_status.indicator(doc, "status");
+	},
 
 	refresh(listview) {
 		// Rebuild grouping after each list refresh/render.

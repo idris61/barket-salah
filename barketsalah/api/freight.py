@@ -3,19 +3,8 @@ from frappe import _
 from frappe.utils import add_days, flt, nowdate
 
 from barketsalah.api.charge_selection import list_charge_type_names_for_shipping_request
-from barketsalah.api.items import ensure_service_item
+from barketsalah.api.items import ensure_service_item, get_default_uom
 from barketsalah.api.utils import log_api_event
-
-
-def _get_default_uom() -> str:
-    uom = frappe.db.get_value("UOM", "Nos", "name")
-    if uom:
-        return uom
-
-    fallback = frappe.db.get_value("UOM", {}, "name")
-    if not fallback:
-        frappe.throw(_("No UOM found. Please create a UOM first."))
-    return fallback
 
 
 @frappe.whitelist()
@@ -187,6 +176,13 @@ def generate_carrier_supplier_quotations(opportunity: str) -> list[str]:
             )
         )
 
+    default_uom = get_default_uom()
+    charge_items: list[dict] = []
+    for charge_name in charge_names:
+        item_code = ensure_service_item(charge_name)
+        stock_uom = frappe.get_cached_value("Item", item_code, "stock_uom") or default_uom
+        charge_items.append({"item_code": item_code, "stock_uom": stock_uom})
+
     carriers = frappe.get_all(
         "Supplier",
         filters={"disabled": 0, "is_transporter": 1},
@@ -220,9 +216,9 @@ def generate_carrier_supplier_quotations(opportunity: str) -> list[str]:
         if frappe.get_meta("Supplier Quotation").has_field("custom_shipping_request") and shipping_request:
             sq.custom_shipping_request = shipping_request
 
-        for charge_name in charge_names:
-            item_code = ensure_service_item(charge_name)
-            stock_uom = frappe.db.get_value("Item", item_code, "stock_uom") or _get_default_uom()
+        for row in charge_items:
+            item_code = row["item_code"]
+            stock_uom = row["stock_uom"]
             sq.append(
                 "items",
                 {

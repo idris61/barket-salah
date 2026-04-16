@@ -26,7 +26,7 @@ Bu belge, Barketsalah uygulamasının ERPNext üzerindeki hedef iş sürecini ö
 
 - **Tedarikçi Fiyat Teklifi** formunda **Müşteri teklifi oluştur** ile tedarikçi kalem satırları ve birim fiyatları aynen kopyalanarak müşteriye **Satış Teklifi** (*Quotation*) açılır; gerekirse fiyatlar satış teklifinde düzenlenir. Kaynak tedarikçi teklifi teklif üzerinde saklanır.
 - Aynı tedarikçi teklifi için yalnızca bir açık müşteri teklifi oluşturulabilir.
-- **Teklif durumu (*Quote Status*):** *Accepted* yapıldığında (kaydetme): aynı fırsattaki diğer müşteri teklifleri *Rejected* olur; aynı fırsattaki diğer **Tedarikçi Fiyat Teklifleri**nin *Müşteri kararı* alanı *Lost*, kazanan kaynak teklif *Won* olur. *Rejected* yapıldığında, bu teklifin kaynak tedarikçi teklifine bağlı *Müşteri kararı* *Lost* yapılır (kaynak teklif tanımlıysa).
+  (Bu akış bir sonraki adımda çekirdek ERPNext statüleri + “Teklifi Kabul Et” butonu ile yeniden tasarlanacaktır.)
 
 ## 5. Faturalar ve ödeme
 

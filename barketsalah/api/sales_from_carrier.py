@@ -111,6 +111,8 @@ def make_customer_quotation_from_supplier_quotation(supplier_quotation: str) -> 
     qt = frappe.new_doc("Quotation")
     qt.quotation_to = "Customer"
     qt.party_name = customer
+    if frappe.get_meta("Quotation").has_field("custom_customer"):
+        qt.custom_customer = customer
     qt.customer_name = frappe.db.get_value("Customer", customer, "customer_name") or customer
     qt.company = company
     qt.opportunity = sq.opportunity
@@ -118,7 +120,6 @@ def make_customer_quotation_from_supplier_quotation(supplier_quotation: str) -> 
         qt.supplier_quotation = sq.name
     qt.transaction_date = nowdate()
     qt.valid_till = add_days(nowdate(), 14)
-    qt.custom_custom_quote_status = "Draft"
     if frappe.get_meta("Quotation").has_field("custom_source_supplier_quotation"):
         qt.custom_source_supplier_quotation = sq.name
     if frappe.get_meta("Quotation").has_field("custom_carrier_supplier_name"):
@@ -157,7 +158,6 @@ def make_customer_quotation_from_supplier_quotation(supplier_quotation: str) -> 
             sq.name,
             {
                 "custom_linked_customer_quotation": qt.name,
-                "custom_customer_decision": "Pending",
             },
             update_modified=True,
         )

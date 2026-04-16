@@ -24,14 +24,23 @@ def _compute_total_profit_for_quotation(doc) -> float:
 def quotation_before_save(doc, method=None) -> None:
     if doc.doctype != "Quotation":
         return
+    meta_q = frappe.get_meta("Quotation")
+    meta_sq = frappe.get_meta("Supplier Quotation")
+
+    # Mirror Customer as a real Link field so core User Permissions apply (party_name is Dynamic Link).
+    if meta_q.has_field("custom_customer"):
+        if doc.get("quotation_to") == "Customer" and doc.get("party_name"):
+            doc.custom_customer = doc.party_name
+        else:
+            doc.custom_customer = None
 
     # Keep Total Profit in sync for UI/reporting.
-    if frappe.get_meta("Quotation").has_field("custom_total_profit_amount"):
+    if meta_q.has_field("custom_total_profit_amount"):
         doc.custom_total_profit_amount = _compute_total_profit_for_quotation(doc)
 
     if doc.is_new():
         sq_name = doc.get("custom_source_supplier_quotation")
-        if not sq_name and frappe.get_meta("Quotation").has_field("supplier_quotation"):
+        if not sq_name and meta_q.has_field("supplier_quotation"):
             sq_name = doc.get("supplier_quotation")
         if sq_name and frappe.db.exists("Supplier Quotation", sq_name):
             from barketsalah.api.sales_from_carrier import existing_active_customer_quotation_for_sq
@@ -45,7 +54,7 @@ def quotation_before_save(doc, method=None) -> None:
                     title=_("Already exists"),
                 )
 
-    if frappe.get_meta("Quotation").has_field("custom_carrier_supplier_name"):
+    if meta_q.has_field("custom_carrier_supplier_name"):
         sq_name = doc.get("custom_source_supplier_quotation")
         if sq_name:
             sq = frappe.get_cached_doc("Supplier Quotation", sq_name)
@@ -55,82 +64,11 @@ def quotation_before_save(doc, method=None) -> None:
         else:
             doc.custom_carrier_supplier_name = None
 
-    if doc.get("custom_source_supplier_quotation") and frappe.get_meta("Quotation").has_field(
-        "supplier_quotation"
-    ):
+    if doc.get("custom_source_supplier_quotation") and meta_q.has_field("supplier_quotation"):
         doc.supplier_quotation = doc.custom_source_supplier_quotation
 
     if not doc.get("opportunity"):
         return
-
-    old_status = None
-    if not doc.is_new():
-        old_status = frappe.db.get_value("Quotation", doc.name, "custom_custom_quote_status")
-
-    new_status = doc.get("custom_custom_quote_status")
-
-    if new_status == "Accepted" and old_status != "Accepted":
-        for quote in frappe.get_all(
-            "Quotation",
-            filters={"opportunity": doc.opportunity, "docstatus": ["<", 2]},
-            fields=["name"],
-        ):
-            if quote.name == doc.name:
-                continue
-            frappe.db.set_value(
-                "Quotation",
-                quote.name,
-                "custom_custom_quote_status",
-                "Rejected",
-                update_modified=False,
-            )
-        sync_supplier_quotations_for_accepted_quotation(doc)
-
-    if new_status == "Rejected" and old_status != "Rejected":
-        sync_supplier_quotation_lost_from_rejected_customer_quote(doc)
-
-
-def sync_supplier_quotations_for_accepted_quotation(doc) -> None:
-    if not doc.get("custom_source_supplier_quotation"):
-        return
-    if not frappe.get_meta("Supplier Quotation").has_field("custom_customer_decision"):
-        return
-    win = doc.custom_source_supplier_quotation
-    opp = doc.opportunity
-    win_sr = None
-    if frappe.get_meta("Supplier Quotation").has_field("custom_shipping_request"):
-        win_sr = frappe.db.get_value("Supplier Quotation", win, "custom_shipping_request")
-
-    for name in frappe.get_all(
-        "Supplier Quotation",
-        filters={"opportunity": opp, "docstatus": ["<", 2]},
-        pluck="name",
-    ):
-        if win_sr is not None:
-            other_sr = frappe.db.get_value("Supplier Quotation", name, "custom_shipping_request")
-            if other_sr != win_sr:
-                continue
-        decision = "Won" if name == win else "Lost"
-        frappe.db.set_value(
-            "Supplier Quotation",
-            name,
-            "custom_customer_decision",
-            decision,
-            update_modified=False,
-        )
-
-
-def sync_supplier_quotation_lost_from_rejected_customer_quote(doc) -> None:
-    sq = doc.get("custom_source_supplier_quotation")
-    if not sq or not frappe.get_meta("Supplier Quotation").has_field("custom_customer_decision"):
-        return
-    frappe.db.set_value(
-        "Supplier Quotation",
-        sq,
-        "custom_customer_decision",
-        "Lost",
-        update_modified=False,
-    )
 
 
 def _sync_opportunity_insurance_flag(opportunity_name: str | None) -> None:
@@ -138,7 +76,8 @@ def _sync_opportunity_insurance_flag(opportunity_name: str | None) -> None:
         log_api_event("setup.sync_insurance.skipped_missing_opportunity")
         return
 
-    if not frappe.get_meta("Opportunity").has_field("custom_shipping_request"):
+    meta_opp = frappe.get_meta("Opportunity")
+    if not meta_opp.has_field("custom_shipping_request"):
         log_api_event(
             "setup.sync_insurance.skipped_missing_opportunity_field",
             opportunity=opportunity_name,
@@ -195,6 +134,3 @@ def _sync_opportunity_insurance_flag(opportunity_name: str | None) -> None:
     )
 
 
-def quotation_submit_create_invoices_on_accept(doc, method=None) -> None:
-    # Intentionally disabled: keep sales workflow manual and avoid changing ERPNext core flows.
-    return

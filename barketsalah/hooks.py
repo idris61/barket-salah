@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 app_include_css = "/assets/barketsalah/css/barketsalah.css"
-# app_include_js = "/assets/barketsalah/js/barketsalah.js"
+app_include_js = "/assets/barketsalah/js/list_status_std.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/barketsalah/css/barketsalah.css"
@@ -47,6 +47,7 @@ doctype_js = {
 	"Opportunity": "public/js/opportunity.js",
 	"Quotation": "public/js/quotation.js",
 	"Sales Order": "public/js/sales_order.js",
+	"Sales Invoice": "public/js/sales_invoice.js",
 	"Supplier Quotation": "public/js/supplier_quotation.js",
 }
 
@@ -128,16 +129,19 @@ doctype_list_js = {
 
 # Permissions
 # -----------
-# Permissions evaluated in scripted ways
+# Quotation: see barketsalah.api.quotation_permissions (Customer User Permissions + non-strict empty-link gap)
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
+permission_query_conditions = {
+	"Quotation": "barketsalah.api.quotation_permissions.get_permission_query_conditions",
+	"Sales Order": "barketsalah.api.quotation_permissions.get_permission_query_conditions",
+	"Sales Invoice": "barketsalah.api.quotation_permissions.get_permission_query_conditions",
+}
 
+has_permission = {
+	"Quotation": "barketsalah.api.quotation_permissions.quotation_has_permission",
+	"Sales Order": "barketsalah.api.quotation_permissions.quotation_has_permission",
+	"Sales Invoice": "barketsalah.api.quotation_permissions.quotation_has_permission",
+}
 
 fixtures = [
 	{

@@ -2,7 +2,24 @@
 // Quotation ListView: group rows by Opportunity with "+ expand" headers (same UX as Supplier Quotation list).
 
 frappe.listview_settings["Quotation"] = {
-	add_fields: ["opportunity", "customer_name", "grand_total", "currency", "transaction_date"],
+	add_fields: [
+		"opportunity",
+		"customer_name",
+		"grand_total",
+		"currency",
+		"transaction_date",
+		"status",
+	],
+
+	formatters: {
+		status(value) {
+			return barketsalah.list_status.formatter_html(value);
+		},
+	},
+
+	get_indicator(doc) {
+		return barketsalah.list_status.indicator(doc, "status");
+	},
 
 	refresh(listview) {
 		setTimeout(() => apply_opportunity_grouping(listview), 0);
