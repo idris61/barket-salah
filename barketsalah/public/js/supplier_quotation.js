@@ -30,7 +30,7 @@ frappe.ui.form.on("Supplier Quotation", {
 			return;
 		}
 
-		frm.add_custom_button(__("Create customer quotation"), () => {
+		const $cust = frm.add_custom_button(__("Create customer quotation"), () => {
 			frappe.call({
 				method: "barketsalah.api.sales_from_carrier.make_customer_quotation_from_supplier_quotation",
 				args: {
@@ -45,5 +45,7 @@ frappe.ui.form.on("Supplier Quotation", {
 				},
 			});
 		});
+		$cust?.removeClass?.("btn-default btn-secondary");
+		$cust?.addClass?.("btn-danger barketsalah-btn-danger");
 	},
 });

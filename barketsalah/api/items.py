@@ -5,6 +5,17 @@ import frappe
 from frappe import _
 
 
+def get_default_uom() -> str:
+    uom = frappe.db.get_value("UOM", "Nos", "name")
+    if uom:
+        return uom
+
+    fallback = frappe.db.get_value("UOM", {}, "name")
+    if not fallback:
+        frappe.throw(_("No UOM found. Please create a UOM first."))
+    return fallback
+
+
 def ensure_service_item(item_code: str) -> str:
     """Ensure a non-stock Item exists for logistics / charge lines (item_code = code)."""
     if frappe.db.exists("Item", item_code):
@@ -16,11 +27,7 @@ def ensure_service_item(item_code: str) -> str:
     if not item_group:
         frappe.throw(_("No Item Group found. Please create an Item Group first."))
 
-    uom = frappe.db.get_value("UOM", "Nos", "name")
-    if not uom:
-        uom = frappe.db.get_value("UOM", {}, "name")
-    if not uom:
-        frappe.throw(_("No UOM found. Please create a UOM first."))
+    uom = get_default_uom()
 
     item = frappe.new_doc("Item")
     item.item_code = item_code

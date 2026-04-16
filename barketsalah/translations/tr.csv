@@ -27,6 +27,16 @@ Warehouse to Warehouse,Depodan depoya
 Notes,Notlar
 Status,Durum
 Draft,Taslak
+Open,Açık
+Replied,Yanıtlandı
+Partially Ordered,Kısmen siparişe döndü
+Ordered,Siparişe döndü
+Cancelled,İptal edildi
+Expired,Süresi doldu
+Submitted,Onaylandı
+Stopped,Durduruldu
+Another quotation for this opportunity has already been accepted.,Bu fırsat için başka bir teklif zaten kabul edildi.
+Already accepted,Zaten kabul edildi
 Converted to Opportunity,Fırsata dönüştürüldü
 Opportunity,Fırsat
 Quotation,Teklif

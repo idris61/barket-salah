@@ -27,11 +27,13 @@ frappe.ui.form.on("Opportunity", {
 		}, 0);
 
 		style_create_menu_primary(frm);
+		style_create_menu_supplier_quotation_red(frm);
 	},
 
 	onload_post_render(frm) {
 		// Ensure styling after page actions are mounted
 		style_create_menu_primary(frm);
+		style_create_menu_supplier_quotation_red(frm);
 	},
 });
 
@@ -61,5 +63,37 @@ function style_create_menu_primary(frm) {
 	setTimeout(try_apply, 0);
 	setTimeout(try_apply, 150);
 	setTimeout(try_apply, 600);
+}
+
+function style_create_menu_supplier_quotation_red(frm) {
+	const label = __("Supplier Quotation");
+
+	const paint = () => {
+		const $wrap = $(frm.page?.wrapper || frm.wrapper);
+		$wrap.find(".page-actions .dropdown-menu .dropdown-item").each(function () {
+			const $el = $(this);
+			if ($el.text().trim() === label) {
+				$el.addClass("barketsalah-dropdown-item-danger");
+			} else {
+				$el.removeClass("barketsalah-dropdown-item-danger");
+			}
+		});
+	};
+
+	setTimeout(paint, 0);
+	setTimeout(paint, 150);
+	setTimeout(paint, 600);
+
+	if (!frm._barketsalah_opp_create_menu_paint) {
+		frm._barketsalah_opp_create_menu_paint = true;
+		$(frm.wrapper).on(
+			"shown.bs.dropdown hidden.bs.dropdown",
+			".page-actions .dropdown",
+			() => setTimeout(paint, 0)
+		);
+		$(frm.wrapper).on("click", ".page-actions .btn-group .dropdown-toggle", () =>
+			setTimeout(paint, 200)
+		);
+	}
 }
 

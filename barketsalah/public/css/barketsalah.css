@@ -32,3 +32,32 @@
 	color: #fff !important;
 	opacity: 0.65 !important;
 }
+
+/* Workflow actions: explicit red (not theme primary black) */
+.btn.barketsalah-btn-danger,
+.btn-danger.barketsalah-btn-danger {
+	background-color: #c0392b !important;
+	border-color: #a93226 !important;
+	color: #fff !important;
+}
+
+.btn.barketsalah-btn-danger:hover,
+.btn-danger.barketsalah-btn-danger:hover,
+.btn.barketsalah-btn-danger:focus,
+.btn-danger.barketsalah-btn-danger:focus {
+	background-color: #a93226 !important;
+	border-color: #922b21 !important;
+	color: #fff !important;
+}
+
+/* Opportunity → Create dropdown: single red row (Supplier Quotation) */
+.dropdown-menu .dropdown-item.barketsalah-dropdown-item-danger {
+	background-color: #c0392b !important;
+	color: #fff !important;
+}
+
+.dropdown-menu .dropdown-item.barketsalah-dropdown-item-danger:hover,
+.dropdown-menu .dropdown-item.barketsalah-dropdown-item-danger:focus {
+	background-color: #a93226 !important;
+	color: #fff !important;
+}

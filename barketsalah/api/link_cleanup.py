@@ -18,25 +18,14 @@ def _clear_supplier_quotation_link_to_customer_quotation(quotation_name: str) ->
         return
 
     meta = frappe.get_meta("Supplier Quotation")
-    if meta.has_field("custom_customer_decision"):
-        frappe.db.sql(
-            """
-            UPDATE `tabSupplier Quotation`
-            SET `custom_linked_customer_quotation` = NULL,
-                `custom_customer_decision` = %s
-            WHERE `custom_linked_customer_quotation` = %s
-            """,
-            ("Pending", quotation_name),
-        )
-    else:
-        frappe.db.sql(
-            """
-            UPDATE `tabSupplier Quotation`
-            SET `custom_linked_customer_quotation` = NULL
-            WHERE `custom_linked_customer_quotation` = %s
-            """,
-            (quotation_name,),
-        )
+    frappe.db.sql(
+        """
+        UPDATE `tabSupplier Quotation`
+        SET `custom_linked_customer_quotation` = NULL
+        WHERE `custom_linked_customer_quotation` = %s
+        """,
+        (quotation_name,),
+    )
 
     for sq_name in sq_names:
         frappe.clear_document_cache("Supplier Quotation", sq_name)
